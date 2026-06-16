@@ -60,6 +60,28 @@
     --radius-full: 9999px;
 }
 
+/* Light Theme Variables Override */
+body.light-theme {
+    --bg-dark: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --border-color: rgba(15, 23, 42, 0.08);
+    --border-color-hover: rgba(59, 130, 246, 0.4);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    
+    --color-primary-glow: rgba(59, 130, 246, 0.08);
+    
+    /* Type Badge Contrast adjustments for Light Mode */
+    --badge-feature-text: #047857;
+    --badge-changed-text: #6d28d9;
+    --badge-fixed-text: #0f766e;
+    --badge-issue-text: #b91c1c;
+    --badge-deprecated-text: #b45309;
+    --badge-general-text: #475569;
+}
+
 /* Global resets & scrollbar */
 * {
     margin: 0;
@@ -895,6 +917,158 @@ body {
 
 .footer-links a:hover {
     color: var(--color-primary);
+}
+
+/* Controls alignment inside header */
+.controls-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-normal);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Toggle visibility of sun/moon icons based on light-theme class */
+.theme-toggle-btn .icon-moon {
+    display: none;
+}
+.theme-toggle-btn .icon-sun {
+    display: block;
+}
+
+body.light-theme .theme-toggle-btn .icon-moon {
+    display: block;
+}
+body.light-theme .theme-toggle-btn .icon-sun {
+    display: none;
+}
+
+/* Light Theme overrides for specific components */
+body.light-theme {
+    background-color: #f1f5f9;
+}
+
+body.light-theme .app-header {
+    background: rgba(241, 245, 249, 0.85);
+    border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .logo-area h1 {
+    background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .blob {
+    opacity: 0.1;
+}
+
+body.light-theme .search-box input {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(15, 23, 42, 0.1);
+    color: #0f172a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .search-box input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+body.light-theme .filter-badge {
+    background: rgba(15, 23, 42, 0.04);
+    color: #475569;
+}
+
+body.light-theme .filter-badge:hover {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+body.light-theme .filter-badge.active {
+    background: var(--color-primary);
+    color: white;
+}
+
+body.light-theme .note-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .note-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .card-body code {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+body.light-theme .btn-secondary {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #475569;
+}
+
+body.light-theme .btn-secondary:hover {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+body.light-theme .modal-container {
+    background: #ffffff;
+    color: #0f172a;
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-theme .tweet-input {
+    background: rgba(241, 245, 249, 0.8);
+    border-color: rgba(15, 23, 42, 0.10);
+    color: #0f172a;
+}
+
+body.light-theme .modal-subtitle {
+    color: #475569;
+}
+
+body.light-theme .character-count-container span {
+    color: #334155;
+}
+
+body.light-theme ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+body.light-theme ::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.15);
+    border: 2px solid #f1f5f9;
+}
+
+body.light-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 23, 42, 0.3);
 }
 
 /* Responsive adjustments */

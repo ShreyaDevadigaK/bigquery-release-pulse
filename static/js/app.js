@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const notesGrid = document.getElementById('notes-grid');
     const refreshBtn = document.getElementById('refresh-btn');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
     const searchInput = document.getElementById('search-input');
     const clearSearchBtn = document.getElementById('clear-search-btn');
     const filterContainer = document.getElementById('category-filters-container');
@@ -57,10 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
         </svg>
     `;
 
+    const copyIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+    `;
+
+    const checkIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--badge-feature-text);">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    `;
+
     // Initialize application
     init();
 
     function init() {
+        // Load theme preference
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+        
         fetchReleaseNotes();
         setupEventListeners();
     }
@@ -70,6 +90,52 @@ document.addEventListener('DOMContentLoaded', () => {
         // Refresh Button
         refreshBtn.addEventListener('click', () => {
             fetchReleaseNotes(true);
+        });
+
+        // Theme Toggle Button
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            if (document.body.classList.contains('light-theme')) {
+                localStorage.setItem('theme', 'light');
+                showToast('Switched to Light Theme');
+            } else {
+                localStorage.setItem('theme', 'dark');
+                showToast('Switched to Dark Theme');
+            }
+        });
+
+        // Export CSV Button
+        exportCsvBtn.addEventListener('click', () => {
+            const filteredNotes = getFilteredNotes();
+            if (filteredNotes.length === 0) {
+                showToast('No notes to export.');
+                return;
+            }
+            
+            // Build CSV
+            let csvContent = "\uFEFF"; // Byte Order Mark for Excel UTF-8 support
+            csvContent += "Date,Type,Details,Link\r\n";
+            
+            filteredNotes.forEach(note => {
+                const date = `"${note.date.replace(/"/g, '""')}"`;
+                const type = `"${note.type.replace(/"/g, '""')}"`;
+                const text = `"${note.text_preview.replace(/"/g, '""')}"`;
+                const link = `"${note.link.replace(/"/g, '""')}"`;
+                csvContent += `${date},${type},${text},${link}\r\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            
+            const today = new Date().toISOString().split('T')[0];
+            link.setAttribute("download", `bigquery_release_notes_${today}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(`Exported ${filteredNotes.length} updates to CSV.`);
         });
 
         // Search Input
@@ -128,7 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
         toastMessage.textContent = message;
         toast.classList.add('show');
         
-        setTimeout(() => {
+        // Force reflow
+        toast.offsetHeight;
+        
+        // Clear previous timeout if any
+        if (toast.timeoutId) {
+            clearTimeout(toast.timeoutId);
+        }
+        
+        toast.timeoutId = setTimeout(() => {
             toast.classList.remove('show');
         }, duration);
     }
@@ -205,10 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Filter and Render notes cards
-    function renderNotes() {
-        // Filter elements
-        const filteredNotes = releaseNotes.filter(note => {
+    // Filter helper function
+    function getFilteredNotes() {
+        return releaseNotes.filter(note => {
             // Check type filter
             const matchesType = activeFilter === 'all' || 
                 note.type.toLowerCase() === activeFilter.toLowerCase();
@@ -221,6 +294,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             return matchesType && matchesSearch;
         });
+    }
+
+    // Filter and Render notes cards
+    function renderNotes() {
+        const filteredNotes = getFilteredNotes();
 
         // Update status message
         if (releaseNotes.length > 0) {
@@ -265,12 +343,35 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${externalLinkIcon}
                         <span>Source</span>
                     </a>
+                    <button class="card-action-btn copy-btn" aria-label="Copy release note text to clipboard">
+                        ${copyIcon}
+                        <span>Copy</span>
+                    </button>
                     <button class="card-action-btn share-btn" aria-label="Tweet this release note">
                         ${shareIcon}
                         <span>Tweet</span>
                     </button>
                 </div>
             `;
+
+            // Setup copy handler
+            const copyBtn = card.querySelector('.copy-btn');
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(note.text_preview).then(() => {
+                    const originalHTML = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `
+                        ${checkIcon}
+                        <span style="color: var(--badge-feature-text); font-weight:700;">Copied!</span>
+                    `;
+                    showToast('Copied text to clipboard!');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHTML;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('Failed to copy to clipboard.');
+                });
+            });
 
             // Setup share handler for card
             const shareBtn = card.querySelector('.share-btn');
@@ -287,7 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedNote = note;
         
         // Clean and prepare tweet text
-        // E.g., "BigQuery Update (June 15, 2026): Use Gemini Cloud Assist to analyze SQL queries... #BigQuery #GoogleCloud https://..."
         const hashtag = " #BigQuery #GoogleCloud";
         
         // Build base text
