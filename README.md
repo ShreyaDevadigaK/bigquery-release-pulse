@@ -9,8 +9,9 @@ A sleek, ambient dark-themed dashboard designed to fetch, parse, search, filter,
 *   **Smart RSS/Atom Parsing**: Uses `BeautifulSoup` and `feedparser` to extract individual release items (Features, Changes, Fixes, Issues, Deprecated) from Google's day-grouped XML feed and display them as separate cards.
 *   **In-Memory Caching**: Implements a 5-minute server cache to prevent rate-limiting and accelerate load times.
 *   **Forced Refresh & Fallback**: Clicking the refresh button fetches a live feed. If the connection fails, it gracefully falls back to the cache and alerts the user with a toast.
-*   **Ambient Dark UI**: Premium visual design with glassmorphism panels (`backdrop-filter`), hover lift effects, staggered card entry animations, and responsive layouts.
-*   **Dynamic Search & Filtering**: Instant search across titles, dates, or details, combined with badge filters for rapid exploration.
+*   **Light & Dark Theme Toggle**: Easily swap between a futuristic dark theme and a clean light-slate theme. Preferences persist across page loads using `localStorage`.
+*   **Copy to Clipboard**: Copies plain-text release summaries directly to your clipboard with a single click, featuring dynamic "Copied!" checkmark animations on the card.
+*   **Export to CSV**: Dynamically packages your *currently filtered and searched* release notes into a standard Excel-compatible CSV file for offline reporting.
 *   **Character-Aware Sharing**: Opens a custom share modal for X (formerly Twitter) that automatically truncates updates at word boundaries to fit the 280-character limit, complete with a color-coded counter.
 
 ---
